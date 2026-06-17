@@ -78,3 +78,27 @@
 | U18 | Password min invalid, 3 chars | System rejects the password and displays a validation error indicating that the minimum length requirement is not met. | Passed | - |
 | U19 | Cart quantity 0 | System prevents checkout or correctly handles an item quantity of zero in the cart. | Passed | - |
 | U20 | Empty cart checkout | Checkout process is blocked and an appropriate message indicates that the cart is empty. | Passed | - |
+## 🚀 How to Run the Project Locally
+### 1. Environment Variables (Required)
+To run the administrator test (`test_a5`), you must set up the environment variables. Otherwise, the admin test will be automatically skipped.
+
+**For macOS / Linux (Run in terminal):**
+```bash
+export SV_ADMIN_EMAIL="hagai@svcollege.co.il"
+export SV_ADMIN_PASSWORD="test1234"
+```
+**For Windows (PowerShell):**
+```
+$env:SV_ADMIN_EMAIL="hagai@svcollege.co.il"
+$env:SV_ADMIN_PASSWORD="test1234"
+```
+### 2. Prepare Environment
+Before running UI tests for the first time, make sure to download the required Playwright browser binaries:
+```bash
+playwright install
+```
+### 3. Run Tests
+To execute all tests (API + UI) and view detailed automated cleanup logs (`[Cleanup] 🧹`), run:
+```bash
+pytest -s
+```
