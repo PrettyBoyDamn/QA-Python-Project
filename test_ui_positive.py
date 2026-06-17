@@ -67,15 +67,14 @@ def test_u7_add_to_cart_updates_counter(page: Page, test_user):
 
     page.locator("[data-test='nav-store']").click()
 
+    cart_nav = page.locator("[data-test='nav-cart']")
+
+    before_text = cart_nav.text_content()
+    before_number = int(re.search(r"\d+", before_text).group())
+
     page.locator("[data-test='btn-add-tshirt']").click()
 
-    page.wait_for_timeout(500)
-
-    page.locator("[data-test='nav-cart']").click()
-
-    expect(
-        page.locator("[data-test='cart-qty-tshirt']")
-    ).to_have_text("1")
+    expect(cart_nav).to_contain_text(str(before_number + 1))
 
 def test_u6_filter_recommendations(page: Page, test_user):
     login_user_ui(page, test_user)

@@ -8,6 +8,23 @@ from conftest import (
     auth_headers,
 )
 
+def test_a2_login_success_returns_access_token(api):
+    user = register_user(api)
+
+    response = login_user(
+        api,
+        user["email"],
+        user["password"]
+    )
+
+    assert response.status == 200, response.text()
+
+    body = response.json()
+
+    assert body["email"] == user["email"]
+    assert "access_token" in body
+    assert body["access_token"] is not None
+    assert body["access_token"] != ""
 
 def extract_recommendation_id(response):
     body = response.json()
