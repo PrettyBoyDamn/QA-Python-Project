@@ -57,7 +57,7 @@
 | U4 | Logo navigation | Clicking the logo redirects the user to the home page. | Passed | - |
 | U5 | Register then login | User successfully registers and can log in using the newly created account. | Passed | - |
 | U6 | Filter recommendations | Recommendations are filtered according to the selected criteria and only matching recommendations are displayed. | Passed | - |
-| U7 | Add to cart updates counter | Adding an item to the cart increases the cart counter by one and updates the cart display. | Failed | nav-cart element is missing. |
+| U7 | Add to cart updates counter | Adding an item to the cart increases the cart counter by one and updates the cart display. | Failed | nav-cart element is missing, therefore cannot enter cart for validation. |
 | U8 | Logout | User is logged out successfully and redirected to the login page or public page. | Passed | - |
 
 ## Negative UI Tests
@@ -74,7 +74,7 @@
 
 | Test ID | Test Name | Expected Result | Status | Actual Result |
 |----------|------------|-----------------|---------|----------------|
-| U17 | Password min valid, 4 chars | User is successfully registered and redirected to pages/login.html. | Failed | User was not redirected to pages/login.html. |
+| U17 | Password min valid, 4 chars | User is successfully registered and redirected to pages/login.html. | Failed | User was not redirected to pages/login.html and stayed at the same page. |
 | U18 | Password min invalid, 3 chars | System rejects the password and displays a validation error indicating that the minimum length requirement is not met. | Passed | - |
 | U19 | Cart quantity 0 | System prevents checkout or correctly handles an item quantity of zero in the cart. | Passed | - |
 | U20 | Empty cart checkout | Checkout process is blocked and an appropriate message indicates that the cart is empty. | Passed | - |
