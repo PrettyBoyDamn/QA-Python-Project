@@ -187,4 +187,7 @@ def test_a5_admin_can_delete_existing_recommendation(api):
         headers=auth_headers(admin_token)
     )
 
-    assert delete_response.status in [200, 204], delete_response.text()
+    assert delete_response.status in [200, 204], (
+    f"Admin delete failed. Status: {delete_response.status}, "
+    f"Body: {delete_response.text()}"
+)

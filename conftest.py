@@ -76,5 +76,24 @@ def auth_headers(token):
 @pytest.fixture
 def test_user(api):
     user = register_user(api)
+    print(f"\nCreated: {user['email']}")
 
     yield user
+
+    print(f"\nCleaning: {user['email']}")
+
+    token = get_token(
+        api,
+        user["email"],
+        user["password"]
+    )
+
+    headers = auth_headers(token)
+
+    response = api.delete(
+        f"/api/profile/me",
+        headers=headers
+    )
+
+    assert response.status in [200, 204]
+
