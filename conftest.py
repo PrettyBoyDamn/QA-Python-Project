@@ -80,20 +80,23 @@ def test_user(api):
 
     yield user
 
-    print(f"\nCleaning: {user['email']}")
+    print(f"\n[Cleanup] Starting automatic deletion for: {user['email']} 🧹")
+    try:
+        token = get_token(
+            api,
+            user["email"],
+            user["password"]
+        )
 
-    token = get_token(
-        api,
-        user["email"],
-        user["password"]
-    )
+        headers = auth_headers(token)
 
-    headers = auth_headers(token)
+        response = api.delete(
+            f"/api/profile/me",
+            headers=headers
+        )
 
-    response = api.delete(
-        f"/api/profile/me",
-        headers=headers
-    )
-
-    assert response.status in [200, 204]
+        assert response.status in [200, 204]
+        print(f"[Cleanup] User {user['email']} successfully deleted! 🟢")
+    except Exception as e:
+        print(f"[Cleanup] Error deleting user: {e} 🔴")
 

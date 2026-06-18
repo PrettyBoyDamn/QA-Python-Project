@@ -8,8 +8,8 @@ from conftest import (
     auth_headers,
 )
 
-def test_a2_login_success_returns_access_token(api):
-    user = register_user(api)
+def test_a2_login_success_returns_access_token(api, test_user):
+    user = test_user
 
     response = login_user(
         api,
@@ -41,8 +41,8 @@ def extract_recommendation_id(response):
     return rec_id
 
 
-def test_a4_create_recommendation_with_empty_category_returns_400(api):
-    user = register_user(api)
+def test_a4_create_recommendation_with_empty_category_returns_400(api, test_user):
+    user = test_user
 
     token = get_token(
         api,
@@ -65,46 +65,58 @@ def test_a4_create_recommendation_with_empty_category_returns_400(api):
     assert response.status in [400, 422]
 
 
-def test_a6_regular_user_cannot_delete_another_users_recommendation(api):
-    owner = register_user(api)
+def test_a6_regular_user_cannot_delete_another_users_recommendation(api, test_user):
+    owner = test_user
     attacker = register_user(api)
 
-    owner_token = get_token(
-        api,
-        owner["email"],
-        owner["password"]
-    )
+    try:
+        # Весь основной код теста теперь сдвинут вправо, внутрь блока try
+        owner_token = get_token(
+            api,
+            owner["email"],
+            owner["password"]
+        )
 
-    attacker_token = get_token(
-        api,
-        attacker["email"],
-        attacker["password"]
-    )
+        attacker_token = get_token(
+            api,
+            attacker["email"],
+            attacker["password"]
+        )
 
-    create_response = api.post(
-        "/api/recommendations",
-        headers=auth_headers(owner_token),
-        form={
-            "category": "Movie",
-            "name": "Owner Recommendation",
-            "recommender_name": owner["name"]
-        }
-    )
+        create_response = api.post(
+            "/api/recommendations",
+            headers=auth_headers(owner_token),
+            form={
+                "category": "Movie",
+                "name": "Owner Recommendation",
+                "recommender_name": owner["name"]
+            }
+        )
 
-    assert create_response.status in [200, 201], create_response.text()
+        assert create_response.status in [200, 201], create_response.text()
 
-    rec_id = extract_recommendation_id(create_response)
+        rec_id = extract_recommendation_id(create_response)
 
-    delete_response = api.delete(
-        f"/api/recommendations/{rec_id}",
-        headers=auth_headers(attacker_token)
-    )
+        delete_response = api.delete(
+            f"/api/recommendations/{rec_id}",
+            headers=auth_headers(attacker_token)
+        )
 
-    assert delete_response.status in [401, 403]
+        assert delete_response.status in [401, 403]
+
+    finally:
+        # Этот блок сработает ВСЕГДА, даже если ассерты выше упадут
+        print(f"\n[Cleanup] Manual deletion for attacker: {attacker['email']} 🧹")
+        try:
+            attacker_cleanup_token = get_token(api, attacker["email"], attacker["password"])
+            api.delete("/api/profile/me", headers=auth_headers(attacker_cleanup_token))
+            print(f"[Cleanup] Attacker {attacker['email']} successfully deleted! 🟢")
+        except Exception as e:
+            print(f"[Cleanup] Error deleting attacker: {e} 🔴")
 
 
-def test_a8_login_with_wrong_password_returns_error_and_no_token(api):
-    user = register_user(api)
+def test_a8_login_with_wrong_password_returns_error_and_no_token(api, test_user):
+    user = test_user
 
     response = login_user(
         api,
@@ -140,8 +152,8 @@ def test_a10_create_recommendation_without_token_returns_401(api):
     os.getenv("SV_ADMIN_PASSWORD") is None,
     reason="Admin password is missing. Set SV_ADMIN_PASSWORD first."
 )
-def test_a5_admin_can_delete_existing_recommendation(api):
-    regular_user = register_user(api)
+def test_a5_admin_can_delete_existing_recommendation(api, test_user):
+    regular_user = test_user
 
     regular_token = get_token(
         api,
